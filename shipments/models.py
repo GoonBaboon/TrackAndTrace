@@ -41,6 +41,7 @@ class Container(models.Model):
     obl_number = models.CharField(max_length=50)
     pol = models.CharField(max_length=100)  # Port of Loading
     pod = models.CharField(max_length=100)  # Port of Discharge
+    cargo_details = models.ManyToManyField('CargoDetail', related_name='containers')
     etd = models.DateField()  # Estimated Time of Departure
     eta = models.DateField()  # Estimated Time of Arrival
     vessel = models.CharField(max_length=100)
@@ -51,8 +52,13 @@ class Container(models.Model):
     def __str__(self):
         return f"Container {self.container_number} ({self.vessel} {self.voyage})"
 
-from django.db import models
-from django.core.exceptions import ValidationError
+
+class CargoDetail(models.Model):
+    hawb_or_hbl = models.CharField(max_length=50)
+    description = models.TextField()
+    packages = models.IntegerField()
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
+    container = models.ForeignKey(Container, on_delete=models.CASCADE)
 
 class HBL(models.Model):
     container = models.ForeignKey(Container, on_delete=models.CASCADE, null=True, blank=True)

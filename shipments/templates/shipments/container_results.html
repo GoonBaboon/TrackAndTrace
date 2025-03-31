@@ -4,6 +4,15 @@
 
 {% block content %}
 <div class="container">
+    <!-- PDF Download Button -->
+    <div class="text-right mb-4">
+        <a href="{% url 'container_pdf' company_code=container.company.code container_number=container.container_number %}" 
+           class="btn btn-danger"
+           style="background-color: #dc3545; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none;">
+            <i class="fas fa-file-pdf"></i> Download PDF
+        </a>
+    </div>
+
     <h1>CONTAINER DETAIL</h1>
     
     <table class="pdf-table">
@@ -102,6 +111,9 @@
         font-style: italic;
         color: #666;
         margin-top: 10px;
+    }
+    .btn-danger:hover {
+        background-color: #c82333 !important;
     }
 </style>
 {% endblock %}

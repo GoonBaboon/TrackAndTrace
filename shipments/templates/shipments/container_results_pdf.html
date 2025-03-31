@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Container {{ container.container_number }} - {{ container.company.name }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+            @top-right {
+                content: "Container {{ container.container_number }}";
+                font-size: 10pt;
+            }
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.4;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            height: 60px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 16pt;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 5px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .summary-item strong {
+            display: inline-block;
+            min-width: 120px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            page-break-inside: avoid;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        .footer {
+            font-size: 10pt;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ request.build_absolute_uri }}/static/images/logo.png" alt="Company Logo">
+        <h1>CONTAINER TRACKING REPORT</h1>
+    </div>
+
+    <h2>CONTAINER NUMBER: {{ container.container_number }}</h2>
+    
+    <div class="summary-grid">
+        <div class="summary-item">
+            <strong>TYPE:</strong> {{ container.container_type|default:"-" }}
+        </div>
+        <div class="summary-item">
+            <strong>SIZE:</strong> {{ container.size|default:"-" }}
+        </div>
+        <div class="summary-item">
+            <strong>SEAL NUMBER:</strong> {{ container.seal_number|default:"-" }}
+        </div>
+        <div class="summary-item">
+            <strong>STATUS:</strong> {{ container.status|default:"-" }}
+        </div>
+        <div class="summary-item">
+            <strong>VESSEL/VOYAGE:</strong> {{ container.vessel_voyage|default:"-" }}
+        </div>
+        <div class="summary-item">
+            <strong>LOAD PORT:</strong> {{ container.load_port|default:"-" }}
+        </div>
+        <div class="summary-item">
+            <strong>DISCHARGE PORT:</strong> {{ container.discharge_port|default:"-" }}
+        </div>
+        <div class="summary-item">
+            <strong>FINAL DESTINATION:</strong> {{ container.final_destination|default:"-" }}
+        </div>
+    </div>
+
+    <h2>SHIPMENT MILESTONES</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>EVENT</th>
+                <th>DATE</th>
+                <th>LOCATION</th>
+                <th>STATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Empty Container Pickup</td>
+                <td>{{ container.empty_pickup_date|date:"d-M-Y"|default:"-" }}</td>
+                <td>{{ container.empty_pickup_location|default:"-" }}</td>
+                <td>{{ container.empty_pickup_status|default:"Pending" }}</td>
+            </tr>
+            <tr>
+                <td>Loaded at Origin</td>
+                <td>{{ container.loading_date|date:"d-M-Y"|default:"-" }}</td>
+                <td>{{ container.loading_location|default:"-" }}</td>
+                <td>{{ container.loading_status|default:"Pending" }}</td>
+            </tr>
+            <tr>
+                <td>Vessel Departure (ETD)</td>
+                <td>{{ container.etd|date:"d-M-Y"|default:"-" }}</td>
+                <td>{{ container.load_port|default:"-" }}</td>
+                <td>{{ container.departure_status|default:"Pending" }}</td>
+            </tr>
+            <tr>
+                <td>Vessel Arrival (ETA)</td>
+                <td>{{ container.eta|date:"d-M-Y"|default:"-" }}</td>
+                <td>{{ container.discharge_port|default:"-" }}</td>
+                <td>{{ container.arrival_status|default:"Pending" }}</td>
+            </tr>
+            <tr>
+                <td>Customs Cleared</td>
+                <td>{{ container.customs_clearance_date|date:"d-M-Y"|default:"-" }}</td>
+                <td>{{ container.customs_location|default:"-" }}</td>
+                <td>{{ container.customs_status|default:"Pending" }}</td>
+            </tr>
+            <tr>
+                <td>Empty Returned</td>
+                <td>{{ container.empty_return_date|date:"d-M-Y"|default:"-" }}</td>
+                <td>{{ container.empty_return_location|default:"-" }}</td>
+                <td>{{ container.empty_return_status|default:"Pending" }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>CARGO DETAILS</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>HAWB/HBL</th>
+                <th>DESCRIPTION</th>
+                <th>PACKAGES</th>
+                <th>WEIGHT (kg)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cargo in container.cargo_details.all %}
+            <tr>
+                <td>{{ cargo.hawb_or_hbl|default:"-" }}</td>
+                <td>{{ cargo.description|default:"-" }}</td>
+                <td>{{ cargo.packages|default:"-" }}</td>
+                <td>{{ cargo.weight|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No cargo details available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Generated on {% now "d-M-Y H:i" %} | {{ container.company.name }}
+        <br>Page <span class="pageNumber"></span> of <span class="totalPages"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pages = document.querySelectorAll('.footer');
+            pages.forEach((page, index) => {
+                page.querySelector('.pageNumber').textContent = index + 1;
+                page.querySelector('.totalPages').textContent = document.querySelectorAll('.footer').length;
+            });
+        });
+    </script>
+</body>
+</html>
