@@ -1,0 +1,107 @@
+{% extends "shipments/base.html" %}
+
+{% block title %}Container Tracking - {{ container.container_number }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>CONTAINER DETAIL</h1>
+    
+    <table class="pdf-table">
+        <thead>
+            <tr>
+                <th>CONTAINER No.</th>
+                <th>TYPE</th>
+                <th>OBL No.</th>
+                <th>POL</th>
+                <th>POD</th>
+                <th>ETD</th>
+                <th>ETA</th>
+                <th>VESSEL</th>
+                <th>VOYAGE</th>
+                <th>CFS</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ container.container_number }}</td>
+                <td>20' CONTAINER</td>  <!-- Hardcoded as shown in PDF -->
+                <td>{{ container.obl_number }}</td>
+                <td>{{ container.pol }}</td>
+                <td>{{ container.pod }}</td>
+                <td>{{ container.etd|date:"d-M-y" }}</td>
+                <td>{{ container.eta|date:"d-M-y" }}</td>
+                <td>{{ container.vessel }}</td>
+                <td>{{ container.voyage }}</td>
+                <td>{{ container.cfs|default:"-" }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>HBL DETAIL</h2>
+    <table class="pdf-table">
+        <thead>
+            <tr>
+                <th>HBL No.</th>
+                <th>ORIGIN</th>
+                <th>DESTINATION</th>
+                <th>PACK DESCRIPTION</th>
+                <th>WEIGHT (KGS)</th>
+                <th>VOLUME (CBM)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hbl in container.hbl_set.all %}
+            <tr>
+                <td>{{ hbl.hbl_number }}</td>
+                <td>{{ hbl.origin }}</td>
+                <td>{{ hbl.destination }}</td>
+                <td>{{ hbl.packages }} Package(s) in {{ hbl.packages }} Package(s)</td>
+                <td>{{ hbl.weight|floatformat:"0" }}</td>
+                <td>{{ hbl.volume|floatformat:"0" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="note">
+        <p>By clicking on HBL number (marked by green rectangular box highlighted with yellow color) under HBL Detail section, user will be redirected to milestone screen.</p>
+    </div>
+</div>
+
+<style>
+    .pdf-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+    .pdf-table th {
+        background-color: #f2f2f2;
+        text-align: left;
+        padding: 8px;
+        border: 1px solid #ddd;
+        font-weight: bold;
+    }
+    .pdf-table td {
+        padding: 8px;
+        border: 1px solid #ddd;
+    }
+    .pdf-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    h1 {
+        color: #2c3e50;
+        font-size: 20px;
+        margin-top: 30px;
+    }
+    h2 {
+        color: #2c3e50;
+        font-size: 18px;
+        margin-top: 20px;
+    }
+    .note {
+        font-style: italic;
+        color: #666;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}

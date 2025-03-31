@@ -1,0 +1,39 @@
+# Python
+*.pyc
+*~
+__pycache__
+*.swp
+*.sqlite3
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Django
+db.sqlite3
+media
+staticfiles
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+venv/
+env/
+ENV/
+.env/
+
+# WeasyPrint temp files
+*.tmp
+*.log
+
+# Database
+*.db
+*.sql
+
+# macOS
+.DS_Store

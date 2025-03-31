@@ -1,0 +1,145 @@
+{% extends "shipments/base.html" %}
+
+{% block title %}HBL Tracking - {{ hbl.hbl_number }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hbl-header">
+        <h1>HBL NUMBER: {{ hbl.hbl_number }}</h1>
+        <div class="hbl-summary">
+            <p><strong>OBL NUMBER/DATE:</strong> {{ hbl.container.obl_number }}</p>
+            <p><strong>PACKAGES:</strong> {{ hbl.packages }} Package(s) in {{ hbl.packages }} Package(s)</p>
+            <p><strong>WEIGHT:</strong> {{ hbl.weight|floatformat:"0" }} kgs</p>
+            <p><strong>VOLUME:</strong> {{ hbl.volume|floatformat:"0" }} CBM</p>
+            <p><strong>ORIGIN:</strong> {{ hbl.origin }}</p>
+            <p><strong>FINAL DESTINATION:</strong> {{ hbl.destination }}</p>
+            <p><strong>DELIVERY PLACE:</strong> {{ hbl.delivery_place|default:"-" }}</p>
+            <p><strong>DELIVERY ORDER NUMBER:</strong> {{ hbl.delivery_order|default:"-" }}</p>
+            <p><strong>DELIVERY ORDER DATE:</strong> {{ hbl.delivery_date|date:"d-M-y"|default:"-" }}</p>
+        </div>
+    </div>
+
+    {% if hbl.container %}
+    <div class="pickup-info">
+        <h3>PICKUP INFORMATION</h3>
+        <table class="hbl-table">
+            <tr>
+                <th>PICKUP DATE</th>
+                <th>DRIVER</th>
+                <th>TRUCK NO</th>
+                <th>PCS</th>
+                <th>VOLUME</th>
+                <th>WEIGHT</th>
+            </tr>
+            <tr>
+                <td>{{ hbl.pickup_date|date:"d-M-y"|default:"-" }}</td>
+                <td>{{ hbl.driver|default:"-" }}</td>
+                <td>{{ hbl.truck_number|default:"-" }}</td>
+                <td>{{ hbl.packages }}</td>
+                <td>{{ hbl.volume|floatformat:"0" }}</td>
+                <td>{{ hbl.weight|floatformat:"0" }}</td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+
+    <h2>MILESTONES</h2>
+    <table class="milestone-table">
+        <tr>
+            <th>MILESTONES</th>
+            <th>DATE</th>
+        </tr>
+        <tr>
+            <td>Booking date</td>
+            <td>{{ hbl.get_booking_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>Origin pickup date</td>
+            <td>{{ hbl.get_pickup_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>Cargo received date</td>
+            <td>{{ hbl.get_cargo_received_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>QC date</td>
+            <td>{{ hbl.get_qc_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>Export clearance date</td>
+            <td>{{ hbl.get_export_clearance_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>Loading date - {{ hbl.container.obl_number }}-{{ hbl.container.container_number }}</td>
+            <td>{{ hbl.get_loading_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>ETD {{ hbl.origin }} on {{ hbl.container.vessel }}/{{ hbl.container.voyage }}</td>
+            <td>{{ hbl.get_etd|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>ETA {{ hbl.destination }}</td>
+            <td>{{ hbl.get_eta|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>CAN sent to Consignee/Notify</td>
+            <td>{{ hbl.get_can_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>CFS ETA</td>
+            <td>{{ hbl.get_cfs_eta|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>Unloading date {{ hbl.container.obl_number }}</td>
+            <td>{{ hbl.get_unloading_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>Import clearance date</td>
+            <td>{{ hbl.get_import_clearance_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>DO date</td>
+            <td>{{ hbl.delivery_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+        <tr>
+            <td>Cargo picked up by {{ hbl.driver|default:"-" }} on truck {{ hbl.truck_number|default:"-" }}</td>
+            <td>{{ hbl.get_cargo_pickup_date|date:"d-M-y"|default:"Pending" }}</td>
+        </tr>
+    </table>
+</div>
+
+<style>
+    .hbl-header {
+        background: #f5f5f5;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+    }
+    .hbl-summary p {
+        margin: 5px 0;
+    }
+    .hbl-table, .milestone-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    .hbl-table th, .milestone-table th {
+        background-color: #2c3e50;
+        color: white;
+        padding: 10px;
+        text-align: left;
+    }
+    .hbl-table td, .milestone-table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    .milestone-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    h2 {
+        color: #2c3e50;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+</style>
+{% endblock %}

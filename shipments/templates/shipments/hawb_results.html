@@ -1,0 +1,105 @@
+{% extends "shipments/base.html" %}
+
+{% block title %}HAWB Tracking - {{ hawb.hawb_number }}{% endblock %}
+
+{% block content %}
+
+{% if pdf_error %}
+<div class="alert alert-danger">
+    PDF generation failed: {{ pdf_error }}
+    <br>Please contact support if this persists.
+</div>
+{% endif %}
+
+<div class="text-right mb-3">
+    <a href="{% url 'hawb_pdf' company_code=hawb.company.code hawb_number=hawb.hawb_number %}" 
+       class="btn btn-danger"
+       onclick="return confirm('Generate PDF report?')">
+        <i class="fas fa-file-pdf"></i> Download PDF
+    </a>
+    <small class="text-muted d-block mt-1">File may take a moment to generate</small>
+</div>
+
+
+<div class="container">
+    <div class="hawb-header">
+        <h1>HAWB NUMBER: {{ hawb.hawb_number }}</h1>
+        <div class="hawb-summary">
+            <p><strong>PACKAGES:</strong> {{ hawb.packages|default:"-" }}</p>
+            <p><strong>GROSS WEIGHT:</strong> {{ hawb.gross_weight|floatformat:"0" }} kgs</p>
+            <p><strong>VOLUME WEIGHT:</strong> {{ hawb.volume_weight|floatformat:"0" }} kgs</p>
+            <p><strong>ORIGIN:</strong> {{ hawb.origin }}</p>
+            <p><strong>FINAL DESTINATION:</strong> {{ hawb.destination }}</p>
+            <p><strong>DELIVERY ORDER NUMBER:</strong> {{ hawb.delivery_order }}</p>
+            <p><strong>DELIVERY ORDER DATE:</strong> {{ hawb.delivery_date|date:"d-M-y"|default:"-" }}</p>
+            <p><strong>SHIPPING BILL NUMBER:</strong> {{ hawb.shipping_bill }}</p>
+        </div>
+    </div>
+
+    <h2>MILESTONES</h2>
+    <table class="hawb-table">
+        <thead>
+            <tr>
+                <th>MILESTONES</th>
+                <th>DATE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Booking date</td>
+                <td>{{ hawb.get_booking_date|date:"d-M-y"|default:"-" }}</td>
+            </tr>
+            <tr>
+                <td>Shipment ready date</td>
+                <td>{{ hawb.get_ready_date|date:"d-M-y"|default:"-" }}</td>
+            </tr>
+            <tr>
+                <td>ETD at {{ hawb.origin }} on [AIRLINE]</td>
+                <td>{{ hawb.get_etd|date:"d-M-y"|default:"-" }}</td>
+            </tr>
+            <tr>
+                <td>ETA at {{ hawb.destination }}</td>
+                <td>{{ hawb.get_eta|date:"d-M-y"|default:"-" }}</td>
+            </tr>
+            <tr>
+                <td>DO Date</td>
+                <td>{{ hawb.delivery_date|date:"d-M-y"|default:"-" }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .hawb-header {
+        background: #f5f5f5;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+    }
+    .hawb-summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .hawb-summary p {
+        margin: 5px 0;
+    }
+    .hawb-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .hawb-table th {
+        background-color: #2c3e50;
+        color: white;
+        padding: 10px;
+        text-align: left;
+    }
+    .hawb-table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    .hawb-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+</style>
+{% endblock %}

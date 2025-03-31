@@ -1,0 +1,61 @@
+{% extends "shipments/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Track Your Shipment</h2>
+    
+    <!-- Updated Search Form -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="get" action="{% url 'track' %}">
+                <div class="form-group">
+                    <label for="tracking_type"><strong>Tracking Type</strong></label>
+                    <select class="form-control" id="tracking_type" name="tracking_type" required>
+                        <option value="">Select type...</option>
+                        <option value="container">Container</option>
+                        <option value="hbl">HBL</option>
+                        <option value="hawb">HAWB</option>
+                        <option value="shipping_bill">Shipping Bill</option>
+                        <option value="booking">Booking</option>
+                    </select>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="reference_number"><strong>Reference Number</strong></label>
+                    <input 
+                        type="text" 
+                        class="form-control form-control-lg" 
+                        id="reference_number" 
+                        name="reference_number" 
+                        placeholder="Enter your reference number"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="company_code"><strong>Company Code (optional)</strong></label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="company_code" 
+                        name="company_code" 
+                        placeholder="Defaults to DSM0"
+                        value="DSM0"
+                    >
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg mt-3">
+                    Track Shipment
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Status/Error Messages -->
+    {% if error %}
+        <div class="alert alert-danger mt-4">
+            {{ error }}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
